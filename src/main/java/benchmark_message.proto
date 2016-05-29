@@ -1,0 +1,4 @@
+message Array {
+    optional int32 size = 1;
+    repeated sint32 array = 2 [packed=true];
+}
