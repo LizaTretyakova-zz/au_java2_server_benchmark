@@ -1,0 +1,57 @@
+package ru.spbau.mit;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+
+class Canvas extends JPanel implements DefaultMouseListener {
+
+    private static final int R = 20;
+    private final ArrayList<Point> points = new ArrayList<>();
+    private final ArrayList<Point> upper = new ArrayList<>();
+    private final ArrayList<Point> lower = new ArrayList<>();
+    private final JPopupMenu popupMenu = new JPopupMenu();
+
+    private Point clickLocation = new Point(0, 0);
+
+    Canvas() {
+        addMouseListener(this);
+        popupMenu.add(buildPopupMenuItem());
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+        switch (e.getButton()) {
+            case MouseEvent.BUTTON1:
+                repaint();
+                break;
+            case MouseEvent.BUTTON3:
+                break;
+            default:
+                break;
+        }
+    }
+
+    public void calculate() {
+        // draw the lines and take a look
+        repaint();
+    }
+
+    public void clear() {
+        repaint();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        // To execute this code call repaint method
+    }
+
+    private JMenuItem buildPopupMenuItem() {
+        // Return JMenuItem called "Remove point"
+        // Point should be removed after click
+        return null;
+    }
+}
