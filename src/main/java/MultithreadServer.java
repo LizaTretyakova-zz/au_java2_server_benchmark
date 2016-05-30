@@ -1,14 +1,10 @@
+import com.sun.deploy.security.ruleset.RunRule;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.List;
-import java.util.logging.Logger;
 
 public class MultithreadServer extends BaseServer {
 
@@ -29,9 +25,31 @@ public class MultithreadServer extends BaseServer {
     }
 
     @Override
-    protected void processClient(DataInputStream input, DataOutputStream output) {
-        new Thread(() -> {
+    protected void processClient() {
+        Utils.tryAcceptAndDoJob(server, (input, output) -> new Thread(() -> {
             processClientCore(input, output);
-        }).start();
+        }).start());
+
+        // DO NOT DELETE THE BELOW CODE
+
+//        try {
+//            Socket socket = server.accept();
+//            DataInputStream input = new DataInputStream(socket.getInputStream());
+//            DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+//
+//            new Thread(() -> {
+//                processClientCore(input, output);
+//                try {
+//                    socket.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                    throw new RuntimeException(e);
+//                }
+//            }).start();
+//        } catch (IOException e) {
+//            LOGGER.info(e.getMessage());
+//            throw new RuntimeException(e);
+//        }
+
     }
 }

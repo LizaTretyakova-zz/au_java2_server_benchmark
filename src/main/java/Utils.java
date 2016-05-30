@@ -1,3 +1,6 @@
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -6,11 +9,10 @@ import java.net.Socket;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
-import java.util.logging.Logger;
 
 public final class Utils {
 
-    private static final Logger LOGGER = Logger.getLogger("Utils");
+    private static final Logger LOGGER = LogManager.getLogger("Utils");
 
     private Utils() {}
 
@@ -75,7 +77,17 @@ public final class Utils {
             LOGGER.info(e.getMessage());
             throw new RuntimeException(e);
         }
-
     }
 
+    public static void tryAcceptAndDoJob(ServerSocket server, BiConsumer<DataInputStream, DataOutputStream> job) {
+        try {
+            Socket socket = server.accept();
+            DataInputStream input = new DataInputStream(socket.getInputStream());
+            DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+            job.accept(input, output);
+        } catch (IOException e) {
+            LOGGER.error(e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
 }

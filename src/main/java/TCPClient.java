@@ -9,23 +9,18 @@ public class TCPClient extends BaseClient {
     public List<Integer> sortData(ServerSocket server, List<Integer> data)
             throws IOException, ExecutionException, InterruptedException {
         ExecutorService executor = Executors.newSingleThreadExecutor();
-        Callable<List<Integer>> callable = new Callable<List<Integer>>() {
-            @Override
-            public List<Integer> call() throws Exception {
-                return Utils.tryConnectWithResourcesAndDoJob(server, (input, output) -> {
-                    try {
-                        Utils.sendMessage(output, data);
-                        return Utils.getMessage(input).getArrayList();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        if(inThreadException == null) {
-                            inThreadException = e;
-                        }
-                        throw new RuntimeException(e);
-                    }
-                });
+        Callable<List<Integer>> callable = () -> Utils.tryConnectWithResourcesAndDoJob(server, (input, output) -> {
+            try {
+                Utils.sendMessage(output, data);
+                return Utils.getMessage(input).getArrayList();
+            } catch (IOException e) {
+                e.printStackTrace();
+                if(inThreadException == null) {
+                    inThreadException = e;
+                }
+                throw new RuntimeException(e);
             }
-        };
+        });
         Future<List<Integer>> future = executor.submit(callable);
         List<Integer> result = future.get();
         executor.shutdown();

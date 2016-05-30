@@ -11,7 +11,8 @@ public abstract class BaseServer {
     protected IOException workThreadException = null;
     protected final Thread workThread = new Thread(() -> {
         while(!Thread.interrupted()) {
-            Utils.tryAcceptWithResourcesAndDoJob(server, this::processClient);
+//            Utils.tryAcceptWithResourcesAndDoJob(server, this::processClient);
+            processClient();
         }
     });
 
@@ -20,7 +21,7 @@ public abstract class BaseServer {
 
     public abstract void start() throws IOException;
     public abstract void stop() throws IOException, InterruptedException;
-    protected abstract void processClient(DataInputStream input, DataOutputStream output);
+    protected abstract void processClient();
 
     public ServerSocket getServer() {
         return server;

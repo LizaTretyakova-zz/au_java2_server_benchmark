@@ -28,4 +28,11 @@ public class BaseServerTest {
         TCPClient client = new TCPClient();
         baseTest(server, client, unsorted, sorted);
     }
+
+    @Test
+    public void testMultithread() throws InterruptedException, ExecutionException, IOException {
+        MultithreadServer server = new MultithreadServer();
+        TCPClient client = new TCPClient();
+        baseTest(server, client, unsorted, sorted);
+    }
 }
