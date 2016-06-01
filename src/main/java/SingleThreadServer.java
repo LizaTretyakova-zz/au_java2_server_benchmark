@@ -1,23 +1,16 @@
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.util.logging.Logger;
 
-public class SingleThreadServer extends BaseServer {
+public class SingleThreadServer extends BaseTCPServer {
 
-    private static final Logger LOGGER = Logger.getLogger("SingleThreadServer");
-
-    @Override
-    public void start() throws IOException {
-        server = new ServerSocket(PORT);
-        workThread.start();
-    }
+//    private static final Logger LOGGER = LogManager.getLogger("SingleThreadServer");
 
     @Override
     public void stop() throws IOException {
-        server.close();
+        //server.close();
         if(workThreadException != null) {
             throw workThreadException;
         }
+        server.close();
         workThread.interrupt();
     }
 

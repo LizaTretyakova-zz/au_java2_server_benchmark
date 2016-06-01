@@ -1,25 +1,13 @@
-import com.sun.deploy.security.ruleset.RunRule;
-
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
 
-public class MultithreadServer extends BaseServer {
-
-    @Override
-    public void start() throws IOException {
-        server = new ServerSocket(PORT);
-        workThread.start();
-    }
+public class MultithreadServer extends BaseTCPServer {
 
     @Override
     public void stop() throws IOException, InterruptedException {
-        server.close();
         if(workThreadException != null) {
             throw workThreadException;
         }
+        server.close(); // when you call server.close(), ALL subsequent server.accept() calls will throw SocketException
         workThread.interrupt();
         workThread.join();
     }
