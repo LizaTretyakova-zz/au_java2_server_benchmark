@@ -1,5 +1,6 @@
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.nio.channels.ServerSocketChannel;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -25,5 +26,11 @@ public class TCPClient {
         List<Integer> result = future.get();
         executor.shutdown();
         return result;
+    }
+
+    public List<Integer> sortData(ServerSocketChannel serverChannel, List<Integer> data)
+            throws InterruptedException, ExecutionException, IOException {
+        ServerSocket server = serverChannel.socket();
+        return sortData(server, data);
     }
 }

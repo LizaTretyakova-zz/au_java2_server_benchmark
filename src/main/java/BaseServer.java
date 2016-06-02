@@ -11,9 +11,8 @@ public abstract class BaseServer {
     public static final int PACKET_SIZE = 65536;
 
     protected IOException workThreadException = null;
-    protected final Thread workThread = new Thread(() -> {
+    protected Thread workThread = new Thread(() -> {
         while(!Thread.interrupted()) {
-//            Utils.tryAcceptWithResourcesAndDoJob(server, this::processClient);
             processClient();
         }
     });

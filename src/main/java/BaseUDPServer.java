@@ -1,10 +1,13 @@
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.util.logging.Logger;
 
 public abstract class BaseUDPServer extends BaseServer {
 
     protected DatagramSocket server;
+    protected static final Logger LOGGER = Logger.getLogger("UDPServer");
 
     @Override
     public void start() throws IOException {
@@ -32,5 +35,13 @@ public abstract class BaseUDPServer extends BaseServer {
             }
             throw new RuntimeException(e);
         }
+    }
+
+    public InetAddress getAddr() {
+        return server.getLocalAddress();
+    }
+
+    public int getPort() {
+        return server.getLocalPort();
     }
 }

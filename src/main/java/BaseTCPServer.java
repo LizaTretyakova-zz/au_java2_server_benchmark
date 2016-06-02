@@ -29,29 +29,4 @@ public abstract class BaseTCPServer extends BaseServer {
     public ServerSocket getServer() {
         return server;
     }
-
-//    public final List<Integer> serverJob(List<Integer> array) {
-//        ArrayList<Integer> mutableList = new ArrayList<>(array);
-//        Collections.sort(mutableList);
-//        return mutableList;
-//    }
-
-//    protected final void processClientCore (DataInputStream input, DataOutputStream output) {
-//        try {
-//            BenchmarkMessage.Array message = Utils.getMessage(input);
-//
-//            // user passed array
-//            List<Integer> array = message.getArrayList();
-//            array = serverJob(array);
-//
-//            // replying message
-//            Utils.outputMessage(output, array);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            if(workThreadException == null) {
-//                workThreadException = e;
-//            }
-//            throw new RuntimeException(e);
-//        }
-//    }
 }

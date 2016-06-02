@@ -1,3 +1,5 @@
+import org.junit.Test;
+
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -12,9 +14,22 @@ public class BaseUDPServerTest {
     public void baseTest(BaseUDPServer server, UDPClient client, List<Integer> data, List<Integer> expected)
             throws IOException, ExecutionException, InterruptedException {
         server.start();
-        List<Integer> result = client.sortData(, data);
+        List<Integer> result = client.sortData(server.getAddr(), server.getPort(), data);
         server.stop();
         assertEquals(result, expected);
     }
 
+    @Test
+    public void testMultithreadUDPServer() throws InterruptedException, ExecutionException, IOException {
+        MultithreadUDPServer server = new MultithreadUDPServer();
+        UDPClient client = new UDPClient();
+        baseTest(server, client, unsorted, sorted);
+    }
+
+    @Test
+    public void testThreadpoolUDPServer() throws InterruptedException, ExecutionException, IOException {
+        ThreadpoolUDPServer server = new ThreadpoolUDPServer();
+        UDPClient client = new UDPClient();
+        baseTest(server, client, unsorted, sorted);
+    }
 }

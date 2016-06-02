@@ -39,4 +39,15 @@ public class BaseTCPServerTest {
         TCPClient client = new TCPClient();
         baseTest(server, client, unsorted, sorted);
     }
+
+    @Test
+    public void testNonblocking() throws InterruptedException, ExecutionException, IOException {
+        NonblockingServer server = new NonblockingServer();
+        TCPClient client = new TCPClient();
+
+        server.start();
+        List<Integer> result = client.sortData(server.getServerChannel(), unsorted);
+        server.stop();
+        assertEquals(sorted, result);
+    }
 }

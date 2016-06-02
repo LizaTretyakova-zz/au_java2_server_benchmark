@@ -1,9 +1,10 @@
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
+import java.net.SocketException;
 
 
-public class OneThreadUDPServer extends BaseUDPServer {
+public class MultithreadUDPServer extends BaseUDPServer {
 
     @Override
     protected void processClient() {
@@ -16,8 +17,12 @@ public class OneThreadUDPServer extends BaseUDPServer {
                 //packet for accepting [no addresses -- we do not send anything]
                 DatagramPacket packet = new DatagramPacket(input, PACKET_SIZE);
                 //receive data [blocking method]
-                server.receive(packet);
-
+                try {
+                    server.receive(packet);
+                } catch (SocketException ignored) {
+                    LOGGER.info("Got SocketException during accept, assuming socket is closed");
+                    return;
+                }
                 //extract info from packet -- where to return
                 InetAddress address = packet.getAddress();
                 int port = packet.getPort();

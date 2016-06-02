@@ -16,7 +16,7 @@ public class UDPClient {
         Callable<List<Integer>> callable = () -> {
             DatagramPacket packet = new DatagramPacket(output.toByteArray(), output.size(), addr, port);
             try (
-                    DatagramSocket socket = new DatagramSocket(0)
+                    DatagramSocket socket = new DatagramSocket()
             ) {
                 socket.send(packet);
 
