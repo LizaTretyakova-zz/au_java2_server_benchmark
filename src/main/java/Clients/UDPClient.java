@@ -1,3 +1,8 @@
+package Clients;
+
+import Servers.BaseServer;
+import Utilities.Utils;
+
 import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -5,7 +10,7 @@ import java.net.InetAddress;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class UDPClient {
+public class UDPClient extends BaseClient {
 
     public List<Integer> sortData(InetAddress addr, int port, List<Integer> data)
             throws IOException, ExecutionException, InterruptedException {

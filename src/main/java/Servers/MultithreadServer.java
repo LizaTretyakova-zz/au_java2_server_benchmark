@@ -1,3 +1,7 @@
+package Servers;
+
+import Utilities.Utils;
+
 import java.io.IOException;
 
 public class MultithreadServer extends BaseTCPServer {
@@ -15,7 +19,9 @@ public class MultithreadServer extends BaseTCPServer {
     @Override
     protected void processClient() {
         Utils.tryAcceptAndDoJob(server, (input, output) -> new Thread(() -> {
-            processClientCore(input, output);
+            while(true) {
+                processClientCore(input, output);
+            }
         }).start());
 
         // DO NOT DELETE THE BELOW CODE

@@ -1,19 +1,23 @@
+package Servers;
+
+import Utilities.BenchmarkMessage;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.ServerSocket;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 
 public class NonblockingServer extends BaseServer {
 
-    private static final Logger LOGGER = Logger.getLogger("Nonblocking");
+    private static final Logger LOGGER = LogManager.getLogger(NonblockingServer.class);
     private ExecutorService threadPool = Executors.newFixedThreadPool(10); // how many?
     private ServerSocketChannel serverChannel;
 
@@ -78,7 +82,7 @@ public class NonblockingServer extends BaseServer {
                 }
             }
         } catch (SocketException e) {
-            Logger.getAnonymousLogger().warning("ServerChannel closed or thread interrupted");
+            LOGGER.warn("ServerChannel closed or thread interrupted");
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException(e);
@@ -110,6 +114,11 @@ public class NonblockingServer extends BaseServer {
     }
 
     @Override
+    public ServerSocket getServer() {
+        return serverChannel.socket();
+    }
+
+    @Override
     protected void processClient() {}
 
     public class NonBlockingHandler
@@ -124,7 +133,7 @@ public class NonblockingServer extends BaseServer {
 
         @Override
         public int onAcceptable() {
-            return SelectionKey.OP_WRITE;
+            return SelectionKey.OP_READ;
 
         }
 

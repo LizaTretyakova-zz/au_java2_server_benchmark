@@ -1,6 +1,16 @@
+package Servers;
+
+import Utilities.BenchmarkMessage;
+import Utilities.Utils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -17,6 +27,7 @@ public abstract class BaseServer {
         }
     });
 
+    // private static final Logger LOGGER = LogManager.getLogger(BaseServer.class);
 
     public abstract void start() throws IOException;
     public abstract void stop() throws IOException, InterruptedException;
@@ -28,10 +39,27 @@ public abstract class BaseServer {
         return mutableList;
     }
 
+    public ServerSocket getServer() {
+        return null;
+    }
+
+    public InetAddress getAddr() {
+        return null;
+    }
+
+    public int getPort() {
+        return -1;
+    }
+
     protected final void processClientCore (DataInputStream input, DataOutputStream output) {
         try {
-            BenchmarkMessage.Array message = Utils.getMessage(input);
-
+            BenchmarkMessage.Array message;
+            try {
+                message = Utils.getMessage(input);
+            } catch (EOFException e) {
+                // LOGGER.error(e.getMessage());
+                return;
+            }
             // user passed array
             List<Integer> array = message.getArrayList();
             array = serverJob(array);

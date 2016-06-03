@@ -1,3 +1,5 @@
+import Clients.TCPClient;
+import Servers.*;
 import org.junit.Test;
 
 import java.io.IOException;

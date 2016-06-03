@@ -1,10 +1,14 @@
+package Clients;
+
+import Utilities.Utils;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.nio.channels.ServerSocketChannel;
 import java.util.List;
 import java.util.concurrent.*;
 
-public class TCPClient {
+public class TCPClient extends BaseClient {
     private Exception inThreadException;
 
     public List<Integer> sortData(ServerSocket server, List<Integer> data)

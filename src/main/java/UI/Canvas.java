@@ -1,10 +1,18 @@
+package UI;
+
+import Metrics.MetricsAggregator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.knowm.xchart.QuickChart;
+import org.knowm.xchart.SwingWrapper;
+import org.knowm.xchart.XYChart;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 
 class Canvas extends JPanel implements DefaultMouseListener {
@@ -147,6 +155,7 @@ class Canvas extends JPanel implements DefaultMouseListener {
 
         // debug
         LOGGER.debug("read parameters");
+        MetricsAggregator.drawMetric("Sample", "X", "Y", Arrays.asList(0L, 1L, 2L), Arrays.asList(2L, 1L, 0L));
 
         // call server with parameters
         repaint();

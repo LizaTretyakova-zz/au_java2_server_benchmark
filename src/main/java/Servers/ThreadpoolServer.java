@@ -1,3 +1,7 @@
+package Servers;
+
+import Utilities.Utils;
+
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -20,6 +24,10 @@ public class ThreadpoolServer extends BaseTCPServer {
 
     @Override
     protected void processClient() {
-        Utils.tryAcceptAndDoJob(server, (input, output) -> threadpool.submit(() -> processClientCore(input, output)));
+        Utils.tryAcceptAndDoJob(server, (input, output) -> threadpool.submit(() -> {
+            while (true) {
+                processClientCore(input, output);
+            }
+        }));
     }
 }

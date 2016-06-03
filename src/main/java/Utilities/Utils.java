@@ -1,9 +1,12 @@
+package Utilities;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -22,8 +25,10 @@ public final class Utils {
     public static List<Integer> tryConnectWithResourcesAndDoJob(
             ServerSocket server, BiFunction<DataInputStream, DataOutputStream, List<Integer>> job
     ) {
+        InetAddress addr = server.getInetAddress();
+        int port = server.getLocalPort();
         try (
-                Socket client = new Socket(server.getInetAddress(), server.getLocalPort());
+                Socket client = new Socket(addr, port);
                 DataInputStream input = new DataInputStream(client.getInputStream());
                 DataOutputStream output = new DataOutputStream(client.getOutputStream());
         ) {
@@ -77,7 +82,7 @@ public final class Utils {
             try {
                 socket = server.accept();
             } catch (SocketException e) {
-                LOGGER.warn("Server closed.");
+                LOGGER.warn("Connection closed.");
                 return;
             }
             DataInputStream input = new DataInputStream(socket.getInputStream());
