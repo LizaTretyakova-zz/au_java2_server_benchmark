@@ -10,6 +10,7 @@ import org.apache.logging.log4j.core.jmx.Server;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -177,23 +178,23 @@ public class Launcher {
     }
 
     private void requestServer(List<Integer> sorted, BaseClient client) throws IOException, ExecutionException, InterruptedException {
-        List<Integer> result;
-        switch (arch) {
-            case TCP_MULTI:
-            case TCP_NONBL:
-            case TCP_POOL:
-            case TCP_SINGLE:
-                ServerSocket serverSocket = server.getServer();
-                result = client.sortData(serverSocket, unsorted, ma);
-                break;
-            case UDP_MULTI:
-            case UDP_POOL:
-                result = client.sortData(server.getAddr(), server.getPort(), unsorted, ma);
-                break;
-            default:
-                LOGGER.error("Unknown architecture");
-                throw new RuntimeException("Unknown architecture");
-        }
+        List<Integer> result = client.sortData(InetAddress.getByName("localhost"), BaseServer.PORT, unsorted, ma);
+//        switch (arch) {
+//            case TCP_MULTI:
+//            case TCP_NONBL:
+//            case TCP_POOL:
+//            case TCP_SINGLE:
+//                //ServerSocket serverSocket = server.getServer();
+//                /* TODO result = client.sortData(serverSocket, unsorted, ma); */
+//                break;
+//            case UDP_MULTI:
+//            case UDP_POOL:
+//                /* TODO result = client.sortData(server.getAddr(), server.getPort(), unsorted, ma); */
+//                break;
+//            default:
+//                LOGGER.error("Unknown architecture");
+//                throw new RuntimeException("Unknown architecture");
+//        }
 
         if (!sorted.equals(result)) {
             LOGGER.error("Expected: ");

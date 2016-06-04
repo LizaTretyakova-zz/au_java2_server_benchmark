@@ -4,6 +4,7 @@ import Metrics.MetricsAggregator;
 import Utilities.Utils;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.nio.channels.ServerSocketChannel;
 import java.util.List;
@@ -13,10 +14,10 @@ public class TCPClient extends BaseClient {
     private Exception inThreadException;
 
     @Override
-    public List<Integer> sortData(ServerSocket server, List<Integer> data, MetricsAggregator ma)
+    public List<Integer> sortData(InetAddress addr, int port, List<Integer> data, MetricsAggregator ma)
             throws IOException, ExecutionException, InterruptedException {
         long start = System.currentTimeMillis();
-        return Utils.tryConnectWithResourcesAndDoJob(server, (input, output) -> {
+        return Utils.tryConnectWithResourcesAndDoJob(addr, port, (input, output) -> {
             try {
                 Utils.outputMessage(output, data);
                 List<Integer> response = Utils.getMessage(input).getArrayList();
@@ -29,9 +30,9 @@ public class TCPClient extends BaseClient {
         });
     }
 
-    public List<Integer> sortData(ServerSocketChannel serverChannel, List<Integer> data, MetricsAggregator ma)
-            throws InterruptedException, ExecutionException, IOException {
-        ServerSocket server = serverChannel.socket();
-        return sortData(server, data, ma);
-    }
+//    public List<Integer> sortData(ServerSocketChannel serverChannel, List<Integer> data, MetricsAggregator ma)
+//            throws InterruptedException, ExecutionException, IOException {
+//        ServerSocket server = serverChannel.socket();
+//        return sortData(server, data, ma);
+//    }
 }
