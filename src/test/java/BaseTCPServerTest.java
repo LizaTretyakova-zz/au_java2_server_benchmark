@@ -56,7 +56,8 @@ public class BaseTCPServerTest {
 
         server.start(ma);
         Thread.sleep(1000);
-        List<Integer> result = client.sortData(InetAddress.getByName("localhost"), BaseServer.PORT, x, 10, unsorted, ma);
+        List<Integer> result =
+                client.sortData(InetAddress.getByName("localhost"), BaseServer.PORT, x, 10, unsorted, ma);
         server.stop();
         assertEquals(sorted, result);
     }
