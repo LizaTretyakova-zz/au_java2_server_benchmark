@@ -13,12 +13,11 @@ import java.util.concurrent.ExecutionException;
 public class LauncherTest {
 
     private final Logger LOGGER = LogManager.getLogger(MetricsAggregator.class);
-    private final Parameter n = new Parameter("n", 0, 9, 1);
-    private final Parameter m = new Parameter("m", 10, 10, 0);
-    private final Parameter d = new Parameter("d", 10, 10, 0);
-    private final MetricsAggregator ma = new MetricsAggregator(
-            "test", 10, new Parameter("n", 1, 10, 1), new Parameter("m", 10, 10, 0), new Parameter("d", 10, 10, 0)
-    );
+    private final Parameter n = new Parameter("n", 1000, 1000, 0);
+    private final Parameter m = new Parameter("m", 20, 30, 1);
+    private final Parameter d = new Parameter("d", 500, 500, 0);
+    private final int x = 5;
+    private final MetricsAggregator ma = new MetricsAggregator("test", x, n, m, d);
 
     @Before
     public void setUp() throws Exception {
@@ -103,16 +102,16 @@ public class LauncherTest {
 //    public void testMultithread() {
 //        baseTestMulti(Launcher.TCP_MULTI);
 //    }
-
+//
 //    @Test
 //    public void testThreadpool() {
 //        baseTestMulti(Launcher.TCP_POOL);
 //    }
 
-//    @Test
-//    public void testNonblocking() {
-//        baseTestMulti(Launcher.TCP_NONBL);
-//    }
+    @Test
+    public void testNonblocking() {
+        baseTestMulti(Launcher.TCP_NONBL);
+    }
 
 //    @Test
 //    public void testSingle() {
@@ -132,7 +131,7 @@ public class LauncherTest {
     private Launcher getLauncher(String arch) {
         Launcher launcher;
         try {
-            launcher = new Launcher(d, n, m, 10, arch);
+            launcher = new Launcher(d, m, n, x, arch);
         } catch (
                 InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e
                 ) {

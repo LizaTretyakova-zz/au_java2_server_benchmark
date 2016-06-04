@@ -8,6 +8,7 @@ import java.io.*;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -27,10 +28,14 @@ public class UDPClient extends BaseClient {
                     DatagramSocket socket = new DatagramSocket()
             ) {
                 socket.send(packet);
-
+                socket.setSoTimeout(1000);
                 byte[] input = new byte[BaseServer.PACKET_SIZE];
                 DatagramPacket response = new DatagramPacket(input, BaseServer.PACKET_SIZE);
-                socket.receive(response);
+                try {
+                    socket.receive(response);
+                } catch (SocketTimeoutException e) {
+                    continue;
+                }
                 result = Utils.getMessage(new DataInputStream(new ByteArrayInputStream(input))).getArrayList();
                 ma.submitAvg(System.currentTimeMillis() - start);
             }

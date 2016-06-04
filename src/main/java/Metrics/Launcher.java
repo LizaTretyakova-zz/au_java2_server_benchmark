@@ -202,7 +202,7 @@ public class Launcher {
         return clients;
     }
 
-    private int countParam(Parameter p, int i) {
+    public static int countParam(Parameter p, int i) {
         return p.getStart() + i * p.getStep();
     }
 

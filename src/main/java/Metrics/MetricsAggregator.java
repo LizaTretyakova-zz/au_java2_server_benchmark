@@ -30,6 +30,7 @@ public class MetricsAggregator {
     private final Parameter n;
     private final Parameter m;
     private final Parameter d;
+    private Parameter changing = null;
 
     private final List<Long> requestTime = new ArrayList<>();
     private final List<Long> requestBuf = new ArrayList<>();
@@ -85,8 +86,10 @@ public class MetricsAggregator {
             Files.createDirectory(Paths.get(NAME));
         }
 
+        String dop = changing == null ? "" : changing.getName();
         String filename =
-                Paths.get(NAME, NAME + purpose + Long.toString(System.currentTimeMillis()) + ".txt").toString();
+                Paths.get(NAME, NAME + arch + purpose + dop + ".csv").toString();
+        Files.deleteIfExists(Paths.get(filename));
         return new FileWriter(new File(filename));
     }
 
@@ -107,10 +110,15 @@ public class MetricsAggregator {
 
     private void storeMetric(String metricName, List<Long> val) throws IOException {
         FileWriter writer = createFile(metricName);
-        writer.append(metricName);
-        writer.append("\n");
+        writer.append(metricName + ", " + changing.getName() + "\n");
+//        writer.append("\n");
+        int i = 0;
         for(long a: val) {
+            i++;
+            int tmp = i;
             writer.append(Long.toString(a));
+            writer.append(", ");
+            writer.append(Integer.toString(Launcher.countParam(changing, tmp)));
             writer.append("\n");
         }
         writer.flush();
@@ -129,6 +137,7 @@ public class MetricsAggregator {
 
     public void store() throws IOException {
         storeInfo();
+
         storeRequest();
         storeClient();
         storeAvg();
@@ -146,7 +155,6 @@ public class MetricsAggregator {
     }
 
     public void draw() {
-        Parameter changing = null;
         if(n.isChanging()) {
             changing = n;
         } else if (m.isChanging()) {

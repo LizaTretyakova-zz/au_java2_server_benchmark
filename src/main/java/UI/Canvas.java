@@ -60,11 +60,17 @@ class Canvas extends JPanel implements DefaultMouseListener {
         JRadioButton multiThreadUDPServerButton = new JRadioButton(Launcher.UDP_MULTI);
         multiThreadUDPServerButton.setSelected(true);
         JRadioButton threadPoolUDPServerButton = new JRadioButton(Launcher.UDP_POOL);
+//        JRadioButton threadPoolTCPServerButton = new JRadioButton(Launcher.TCP_POOL);
+        JRadioButton nonblTCPServerButton = new JRadioButton(Launcher.TCP_NONBL);
         server.setLayout(new BoxLayout(server, BoxLayout.Y_AXIS));
         serverButtonGroup.add(multiThreadUDPServerButton);
         serverButtonGroup.add(threadPoolUDPServerButton);
+//        serverButtonGroup.add(threadPoolTCPServerButton);
+        serverButtonGroup.add(nonblTCPServerButton);
         server.add(multiThreadUDPServerButton);
         server.add(threadPoolUDPServerButton);
+//        server.add(threadPoolTCPServerButton);
+        server.add(nonblTCPServerButton);
 
         // also there is a text field for number of requests for each client
         JPanel requests = new JPanel();

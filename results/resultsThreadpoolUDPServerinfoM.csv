@@ -1,0 +1,15 @@
+ThreadpoolUDPServer
+10
+Parameter: N
+Start: 1000
+End: 1000
+Step: 0
+Parameter: M
+Start: 20
+End: 30
+Step: 1
+Parameter: D
+Start: 500
+End: 500
+Step: 0
+
