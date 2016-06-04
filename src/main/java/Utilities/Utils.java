@@ -23,10 +23,8 @@ public final class Utils {
     // wrappers for connection establishing
 
     public static List<Integer> tryConnectWithResourcesAndDoJob(
-            ServerSocket server, BiFunction<DataInputStream, DataOutputStream, List<Integer>> job
+            InetAddress addr, int port, BiFunction<DataInputStream, DataOutputStream, List<Integer>> job
     ) {
-        InetAddress addr = server.getInetAddress();
-        int port = server.getLocalPort();
         try (
                 Socket client = new Socket(addr, port);
                 DataInputStream input = new DataInputStream(client.getInputStream());

@@ -5,6 +5,7 @@ import Servers.*;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -22,7 +23,7 @@ public class BaseTCPServerTest {
     public void baseTest(BaseTCPServer server, TCPClient client, List<Integer> data, List<Integer> expected)
             throws IOException, ExecutionException, InterruptedException {
         server.start(ma);
-        List<Integer> result = client.sortData(server.getServer(), x, 10, data, ma);
+        List<Integer> result = client.sortData(InetAddress.getByName("localhost"), BaseServer.PORT, x, 10, data, ma);
         server.stop();
         assertEquals(result, expected);
     }
@@ -54,7 +55,8 @@ public class BaseTCPServerTest {
         TCPClient client = new TCPClient();
 
         server.start(ma);
-        List<Integer> result = client.sortData(server.getServerChannel(), x, 10, unsorted, ma);
+        Thread.sleep(1000);
+        List<Integer> result = client.sortData(InetAddress.getByName("localhost"), BaseServer.PORT, x, 10, unsorted, ma);
         server.stop();
         assertEquals(sorted, result);
     }

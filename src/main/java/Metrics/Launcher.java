@@ -10,6 +10,7 @@ import org.apache.logging.log4j.core.jmx.Server;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -185,25 +186,9 @@ public class Launcher {
         return (p.getEnd() - p.getStart()) / p.getStep();
     }
 
-    private void requestServer(List<Integer> sorted, BaseClient client, int i)
-            throws IOException, ExecutionException, InterruptedException {
-        List<Integer> result;
-        switch (arch) {
-            case TCP_MULTI:
-            case TCP_NONBL:
-            case TCP_POOL:
-            case TCP_SINGLE:
-                ServerSocket serverSocket = server.getServer();
-                result = client.sortData(serverSocket, x, countParam(d, i), unsorted, ma);
-                break;
-            case UDP_MULTI:
-            case UDP_POOL:
-                result = client.sortData(server.getAddr(), server.getPort(), x, countParam(d, i), unsorted, ma);
-                break;
-            default:
-                LOGGER.error("Unknown architecture");
-                throw new RuntimeException("Unknown architecture");
-        }
+    private void requestServer(List<Integer> sorted, BaseClient client, int i) throws IOException, ExecutionException, InterruptedException {
+        List<Integer> result =
+                client.sortData(InetAddress.getByName("localhost"), BaseServer.PORT, x, countParam(d, i), unsorted, ma);
 
         if (!sorted.equals(result)) {
             LOGGER.error("Expected: ");
