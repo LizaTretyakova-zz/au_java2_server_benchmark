@@ -6,7 +6,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -46,7 +45,7 @@ public class MetricsAggregatorTest {
     @Test
     public void testStore() throws Exception {
         for(long i = 0; i < 10; i++) {
-            ma.submit(i, i, i);
+            ma.submitRequestClientAvg(i, i, i);
         }
         ma.store();
         LOGGER.error(Paths.get(MetricsAggregator.NAME));

@@ -12,7 +12,6 @@ public class ThreadpoolServer extends BaseTCPServer {
 
     @Override
     public void stop() throws IOException, InterruptedException {
-        // server.close();
         if(workThreadException != null) {
             throw workThreadException;
         }
@@ -20,6 +19,8 @@ public class ThreadpoolServer extends BaseTCPServer {
         threadpool.shutdown();
         workThread.interrupt();
         workThread.join();
+        workThread = null;
+        ma = null;
     }
 
     @Override

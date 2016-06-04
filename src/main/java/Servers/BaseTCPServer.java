@@ -1,30 +1,47 @@
 package Servers;
 
-import Servers.BaseServer;
+import Metrics.MetricsAggregator;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 
 public abstract class BaseTCPServer extends BaseServer {
-    protected ServerSocket server;
-    protected IOException workThreadException = null;
-    protected final Thread workThread = new Thread(() -> {
-        while(!Thread.interrupted() && !server.isClosed()) {
-            processClient();
-        }
-    });
-
-
     public static final int PORT = 8081;
 
-    public abstract void stop() throws IOException, InterruptedException;
-    protected abstract void processClient();
+    protected ServerSocket server;
+    protected IOException workThreadException = null;
+    protected Thread workThread;
 
-    public void start() throws IOException {
+    @Override
+    protected Thread createWorkThread() {
+        return new Thread(() -> {
+            while (!Thread.interrupted() && !server.isClosed()) {
+                processClient();
+            }
+        });
+    }
+
+    @Override
+    public void start(MetricsAggregator metricsAggregator) throws IOException {
         server = new ServerSocket(PORT);
+        ma = metricsAggregator;
+        workThread = createWorkThread();
         workThread.start();
     }
 
+    @Override
+    public void stop() throws IOException, InterruptedException {
+        if(workThreadException != null) {
+            throw workThreadException;
+        }
+        server.close();
+        workThread.interrupt();
+        workThread.join();
+        workThread = null;
+        ma = null;
+    }
+
+    @Override
     public ServerSocket getServer() {
         return server;
     }

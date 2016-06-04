@@ -37,47 +37,43 @@ public class Launcher {
     private Parameter n;
     private Parameter m;
     private Parameter d;
+    private int x;
     private MetricsAggregator ma;
 
-    public Launcher(Parameter d, Parameter m, Parameter n, String arch)
+    public Launcher(Parameter d, Parameter m, Parameter n, int x, String arch)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.d = d;
         this.m = m;
         this.n = n;
+        this.x = x;
         this.arch = arch;
 
-//        generateUnsorted(0);
+        ma = new MetricsAggregator(arch, x, n, m, d);
 
         switch(arch) {
             case TCP_SINGLE:
                 server = new SingleThreadServer();
                 clientClass = TCPClient.class;
-//                generateClients();
                 break;
             case TCP_MULTI:
                 server = new MultithreadServer();
                 clientClass = TCPClient.class;
-//                generateClients();
                 break;
             case TCP_POOL:
                 server = new ThreadpoolServer();
                 clientClass = TCPClient.class;
-//                generateClients();
                 break;
             case TCP_NONBL:
                 server = new NonblockingServer();
                 clientClass = TCPClient.class;
-//                generateClients();
                 break;
             case UDP_MULTI:
                 server = new MultithreadUDPServer();
                 clientClass = UDPClient.class;
-//                generateClients();
                 break;
             case UDP_POOL:
                 server = new ThreadpoolUDPServer();
                 clientClass = UDPClient.class;
-//                generateClients();
                 break;
             default:
                 LOGGER.error("Unknown architecture. Terminating testing.");
@@ -100,7 +96,7 @@ public class Launcher {
             InvocationTargetException,
             InstantiationException,
             IOException, ExecutionException, InterruptedException {
-        server.start();
+        server.start(ma);
         for(int i = 0; i < getSteps(); i++) {
             generateUnsorted(i);
             List<BaseClient> clients = generateClients(i);
@@ -132,7 +128,7 @@ public class Launcher {
             InvocationTargetException,
             InstantiationException,
             IOException, ExecutionException, InterruptedException {
-        /* TODO */ server.start();
+        /* TODO */ server.start(ma);
         for(int i = 0; i < getSteps(); i++) {
             generateUnsorted(i);
             List<BaseClient> clients = generateClients(i);
@@ -163,13 +159,6 @@ public class Launcher {
         return clients;
     }
 
-//    private void generateUDPClients() {
-//        clients = new ArrayList<>();
-//        for(int i = 0; i < m.getStart(); i++) {
-//            clients.add(new UDPClient());
-//        }
-//    }
-
     private int getSteps() {
         if(n.isChanging()) {
             return countSteps(n);
@@ -194,12 +183,12 @@ public class Launcher {
             case TCP_NONBL:
             case TCP_POOL:
             case TCP_SINGLE:
-                ServerSocket serverSocket = (ServerSocket) server.getServer();
-                result = client.sortData(serverSocket, unsorted);
+                ServerSocket serverSocket = server.getServer();
+                result = client.sortData(serverSocket, unsorted, ma);
                 break;
             case UDP_MULTI:
             case UDP_POOL:
-                result = client.sortData(server.getAddr(), server.getPort(), unsorted);
+                result = client.sortData(server.getAddr(), server.getPort(), unsorted, ma);
                 break;
             default:
                 LOGGER.error("Unknown architecture");

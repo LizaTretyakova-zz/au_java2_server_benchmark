@@ -1,20 +1,24 @@
 package Servers;
 
+import Metrics.MetricsAggregator;
+
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.ServerSocket;
 import java.util.logging.Logger;
 
 public abstract class BaseUDPServer extends BaseServer {
 
     protected DatagramSocket server;
     protected static final Logger LOGGER = Logger.getLogger("UDPServer");
+    protected Thread workThread;
 
     @Override
-    public void start() throws IOException {
+    public void start(MetricsAggregator metricsAggregator) throws IOException {
         server = new DatagramSocket(PORT);
+        ma = metricsAggregator;
+        workThread = createWorkThread();
         workThread.start();
     }
 
@@ -26,6 +30,8 @@ public abstract class BaseUDPServer extends BaseServer {
         }
         workThread.interrupt();
         workThread.join();
+        workThread = null;
+        ma = null;
     }
 
     protected void sendPacket(DatagramPacket clientPacket) {

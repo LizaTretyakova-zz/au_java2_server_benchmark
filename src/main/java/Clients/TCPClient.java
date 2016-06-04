@@ -1,5 +1,6 @@
 package Clients;
 
+import Metrics.MetricsAggregator;
 import Utilities.Utils;
 
 import java.io.IOException;
@@ -11,30 +12,26 @@ import java.util.concurrent.*;
 public class TCPClient extends BaseClient {
     private Exception inThreadException;
 
-    public List<Integer> sortData(ServerSocket server, List<Integer> data)
+    @Override
+    public List<Integer> sortData(ServerSocket server, List<Integer> data, MetricsAggregator ma)
             throws IOException, ExecutionException, InterruptedException {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Callable<List<Integer>> callable = () -> Utils.tryConnectWithResourcesAndDoJob(server, (input, output) -> {
+        long start = System.currentTimeMillis();
+        return Utils.tryConnectWithResourcesAndDoJob(server, (input, output) -> {
             try {
                 Utils.outputMessage(output, data);
-                return Utils.getMessage(input).getArrayList();
+                List<Integer> response = Utils.getMessage(input).getArrayList();
+                ma.submitAvg(System.currentTimeMillis() - start);
+                return response;
             } catch (IOException e) {
                 e.printStackTrace();
-                if(inThreadException == null) {
-                    inThreadException = e;
-                }
                 throw new RuntimeException(e);
             }
         });
-        Future<List<Integer>> future = executor.submit(callable);
-        List<Integer> result = future.get();
-        executor.shutdown();
-        return result;
     }
 
-    public List<Integer> sortData(ServerSocketChannel serverChannel, List<Integer> data)
+    public List<Integer> sortData(ServerSocketChannel serverChannel, List<Integer> data, MetricsAggregator ma)
             throws InterruptedException, ExecutionException, IOException {
         ServerSocket server = serverChannel.socket();
-        return sortData(server, data);
+        return sortData(server, data, ma);
     }
 }

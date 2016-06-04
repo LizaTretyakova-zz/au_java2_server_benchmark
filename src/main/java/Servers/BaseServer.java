@@ -1,5 +1,6 @@
 package Servers;
 
+import Metrics.MetricsAggregator;
 import Utilities.BenchmarkMessage;
 import Utilities.Utils;
 import org.apache.logging.log4j.LogManager;
@@ -21,21 +22,22 @@ public abstract class BaseServer {
     public static final int PACKET_SIZE = 65536;
 
     protected IOException workThreadException = null;
-    protected Thread workThread = new Thread(() -> {
-        while(!Thread.interrupted()) {
-            processClient();
-        }
-    });
+    protected MetricsAggregator ma;
 
-    // private static final Logger LOGGER = LogManager.getLogger(BaseServer.class);
-
-    public abstract void start() throws IOException;
+    public abstract void start(MetricsAggregator ma) throws IOException;
     public abstract void stop() throws IOException, InterruptedException;
     protected abstract void processClient();
 
     public final List<Integer> serverJob(List<Integer> array) {
+        long requestEnd;
+        long requestStart = System.currentTimeMillis();
+
         ArrayList<Integer> mutableList = new ArrayList<>(array);
         Collections.sort(mutableList);
+
+        requestEnd = System.currentTimeMillis();
+        ma.submitRequest(requestEnd - requestStart);
+
         return mutableList;
     }
 
@@ -51,13 +53,24 @@ public abstract class BaseServer {
         return -1;
     }
 
+    protected Thread createWorkThread() {
+        return new Thread(() -> {
+            while(!Thread.interrupted()) {
+                processClient();
+            }
+        });
+    }
+
     protected final void processClientCore (DataInputStream input, DataOutputStream output) {
         try {
+            long clientStart;
+            long clientEnd;
+
             BenchmarkMessage.Array message;
             try {
                 message = Utils.getMessage(input);
+                clientStart = System.currentTimeMillis();
             } catch (EOFException e) {
-                // LOGGER.error(e.getMessage());
                 return;
             }
             // user passed array
@@ -66,6 +79,13 @@ public abstract class BaseServer {
 
             // replying message
             Utils.outputMessage(output, array);
+            clientEnd = System.currentTimeMillis();
+
+            // TODO
+            // TODO
+            // TODO-TO-DO-TODO-TO-DO-TODOOOOOOOOOO
+            // TODO-DO-DO-DO
+            ma.submitRequest(clientEnd - clientStart);
         } catch (IOException e) {
             e.printStackTrace();
             if(workThreadException == null) {

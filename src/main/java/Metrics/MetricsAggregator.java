@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MetricsAggregator {
 
@@ -31,8 +32,11 @@ public class MetricsAggregator {
     private final Parameter d;
 
     private final List<Long> requestTime = new ArrayList<>();
+    private final List<Long> requestBuf = new ArrayList<>();
     private final List<Long> clientTime = new ArrayList<>();
+    private final List<Long> clientBuf = new ArrayList<>();
     private final List<Long> avgTime = new ArrayList<>();
+    private final List<Long> avgBuf = new ArrayList<>();
 
     public MetricsAggregator(String arch, int x, Parameter n, Parameter m, Parameter d) {
         this.arch = arch;
@@ -43,21 +47,33 @@ public class MetricsAggregator {
     }
 
     public void submitRequest(long val) {
-        requestTime.add(val);
+        requestBuf.add(val);
     }
 
     public void submitClient(long val) {
-        clientTime.add(val);
+        clientBuf.add(val);
     }
 
     public void submitAvg(long val) {
-        avgTime.add(val);
+        avgBuf.add(val);
     }
 
-    public void submit(long request, long client, long avg) {
-        submitRequest(request);
-        submitClient(client);
-        submitAvg(avg);
+    public void submitRequestClientAvg(long request, long client, long avg) {
+        requestTime.add(request);
+        clientTime.add(client);
+        avgTime.add(avg);
+    }
+
+    public void submit() {
+        long requestAvg = requestBuf.stream().collect(Collectors.averagingLong(x -> x)).longValue();
+        long clientAvg = clientBuf.stream().collect(Collectors.averagingLong(x -> x)).longValue();
+        long avgAvg = avgBuf.stream().collect(Collectors.averagingLong(x -> x)).longValue();
+
+        requestBuf.clear();
+        clientBuf.clear();
+        avgBuf.clear();
+
+        submitRequestClientAvg(requestAvg, clientAvg, avgAvg);
     }
 
     private FileWriter createFile(String purpose) throws IOException {
@@ -145,3 +161,4 @@ public class MetricsAggregator {
         drawMetric("Avg time", "Avg time", changing.getName(), xAxis, avgTime);
     }
 }
+// MerlinArthur, lol

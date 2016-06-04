@@ -16,6 +16,9 @@ public class LauncherTest {
     private final Parameter n = new Parameter("n", 0, 9, 1);
     private final Parameter m = new Parameter("m", 10, 10, 0);
     private final Parameter d = new Parameter("d", 10, 10, 0);
+    private final MetricsAggregator ma = new MetricsAggregator(
+            "test", 10, new Parameter("n", 1, 10, 1), new Parameter("m", 10, 10, 0), new Parameter("d", 10, 10, 0)
+    );
 
     @Before
     public void setUp() throws Exception {
@@ -128,7 +131,7 @@ public class LauncherTest {
     private Launcher getLauncher(String arch) {
         Launcher launcher;
         try {
-            launcher = new Launcher(d, n, m, arch);
+            launcher = new Launcher(d, n, m, 10, arch);
         } catch (
                 InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e
                 ) {

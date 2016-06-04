@@ -1,4 +1,6 @@
 import Clients.TCPClient;
+import Metrics.MetricsAggregator;
+import Metrics.Parameter;
 import Servers.*;
 import org.junit.Test;
 
@@ -12,11 +14,14 @@ import static org.junit.Assert.*;
 public class BaseTCPServerTest {
     private final List<Integer> unsorted = Arrays.asList(3, 2, 4, 1, 5);
     private final List<Integer> sorted = Arrays.asList(1, 2, 3, 4, 5);
+    private final MetricsAggregator ma = new MetricsAggregator(
+            "test", 10, new Parameter("n", 1, 10, 1), new Parameter("m", 10, 10, 0), new Parameter("d", 10, 10, 0)
+    );
 
     public void baseTest(BaseTCPServer server, TCPClient client, List<Integer> data, List<Integer> expected)
             throws IOException, ExecutionException, InterruptedException {
-        server.start();
-        List<Integer> result = client.sortData(server.getServer(), data);
+        server.start(ma);
+        List<Integer> result = client.sortData(server.getServer(), data, ma);
         server.stop();
         assertEquals(result, expected);
     }
@@ -47,8 +52,8 @@ public class BaseTCPServerTest {
         NonblockingServer server = new NonblockingServer();
         TCPClient client = new TCPClient();
 
-        server.start();
-        List<Integer> result = client.sortData(server.getServerChannel(), unsorted);
+        server.start(ma);
+        List<Integer> result = client.sortData(server.getServerChannel(), unsorted, ma);
         server.stop();
         assertEquals(sorted, result);
     }
