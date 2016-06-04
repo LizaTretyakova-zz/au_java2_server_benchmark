@@ -11,11 +11,11 @@ import java.util.concurrent.ExecutionException;
 public abstract class BaseClient {
     protected IOException inThreadException = null;
 
-    public List<Integer> sortData(ServerSocket server, List<Integer> data, MetricsAggregator ma)
+    public List<Integer> sortData(ServerSocket server, int x, int d, List<Integer> data, MetricsAggregator ma)
             throws IOException, ExecutionException, InterruptedException {
         return null;
     }
-    public List<Integer> sortData(InetAddress addr, int port, List<Integer> data, MetricsAggregator ma)
+    public List<Integer> sortData(InetAddress addr, int port, int x, int d, List<Integer> data, MetricsAggregator ma)
             throws IOException, ExecutionException, InterruptedException {
         return null;
     }

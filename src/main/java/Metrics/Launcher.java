@@ -96,7 +96,7 @@ public class Launcher {
             InvocationTargetException,
             InstantiationException,
             IOException, ExecutionException, InterruptedException {
-        server.start(ma);
+        /* TODO */ server.start(ma);
         for(int i = 0; i < getSteps(); i++) {
             generateUnsorted(i);
             List<BaseClient> clients = generateClients(i);
@@ -106,9 +106,10 @@ public class Launcher {
 
             ExecutorService threadpool = Executors.newCachedThreadPool();
             for(BaseClient client: clients) {
+                int iSnapshot = i;
                 threadpool.submit( () -> {
                     try {
-                        requestServer(sorted, client);
+                        requestServer(sorted, client, iSnapshot);
                     } catch (InterruptedException | ExecutionException | IOException e) {
                         e.printStackTrace();
                         LOGGER.error(e.getMessage());
@@ -119,6 +120,7 @@ public class Launcher {
             threadpool.shutdown();
             threadpool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
         }
+        server.stop();
     }
 
     public void launchOneThread()
@@ -136,13 +138,15 @@ public class Launcher {
             List<Integer> sorted = new ArrayList<>(unsorted);
             Collections.sort(sorted);
             for(BaseClient client: clients) {
-                requestServer(sorted, client);
+                requestServer(sorted, client, i);
             }
         }
+        server.stop();
     }
 
     private void generateUnsorted(int i) {
-        int k = n.getStart() + i * n.getStep();
+        // int k = n.getStart() + i * n.getStep();
+        int k = countParam(n, i);
         unsorted = new ArrayList<>();
         for(int j = 0; j < k; j++) {
             unsorted.add(j, RAND.nextInt());
@@ -151,12 +155,17 @@ public class Launcher {
 
     private List<BaseClient> generateClients(int i)
             throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
-        int k = n.getStart() + i * n.getStep();
+        // int k = m.getStart() + i * m.getStep();
+        int k = countParam(m, i);
         List<BaseClient> clients = new ArrayList<>();
         for(int j = 0; j < k; j++) {
             clients.add(j, clientClass.getConstructor().newInstance());
         }
         return clients;
+    }
+
+    private int countParam(Parameter p, int i) {
+        return p.getStart() + i * p.getStep();
     }
 
     private int getSteps() {
@@ -176,7 +185,8 @@ public class Launcher {
         return (p.getEnd() - p.getStart()) / p.getStep();
     }
 
-    private void requestServer(List<Integer> sorted, BaseClient client) throws IOException, ExecutionException, InterruptedException {
+    private void requestServer(List<Integer> sorted, BaseClient client, int i)
+            throws IOException, ExecutionException, InterruptedException {
         List<Integer> result;
         switch (arch) {
             case TCP_MULTI:
@@ -184,11 +194,11 @@ public class Launcher {
             case TCP_POOL:
             case TCP_SINGLE:
                 ServerSocket serverSocket = server.getServer();
-                result = client.sortData(serverSocket, unsorted, ma);
+                result = client.sortData(serverSocket, x, countParam(d, i), unsorted, ma);
                 break;
             case UDP_MULTI:
             case UDP_POOL:
-                result = client.sortData(server.getAddr(), server.getPort(), unsorted, ma);
+                result = client.sortData(server.getAddr(), server.getPort(), x, countParam(d, i), unsorted, ma);
                 break;
             default:
                 LOGGER.error("Unknown architecture");
@@ -202,5 +212,8 @@ public class Launcher {
             LOGGER.error(result);
             throw new AssertionError("sorted != result, arch is " + arch);
         }
+//        else {
+//            LOGGER.error(arch + ": success");
+//        }
     }
 }

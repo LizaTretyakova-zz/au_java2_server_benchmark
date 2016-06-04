@@ -19,11 +19,12 @@ public class BaseUDPServerTest {
     private final MetricsAggregator ma = new MetricsAggregator(
             "test", 10, new Parameter("n", 1, 10, 1), new Parameter("m", 10, 10, 0), new Parameter("d", 10, 10, 0)
     );
+    private final int x = 3;
 
     public void baseTest(BaseUDPServer server, UDPClient client, List<Integer> data, List<Integer> expected)
             throws IOException, ExecutionException, InterruptedException {
         server.start(ma);
-        List<Integer> result = client.sortData(server.getAddr(), server.getPort(), data, ma);
+        List<Integer> result = client.sortData(server.getAddr(), server.getPort(), x, 10, data, ma);
         server.stop();
         assertEquals(result, expected);
     }

@@ -6,6 +6,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 public class ThreadpoolUDPServer extends BaseUDPServer {
@@ -45,5 +46,20 @@ public class ThreadpoolUDPServer extends BaseUDPServer {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    @Override
+    public void stop() throws IOException, InterruptedException {
+        server.close();
+        if(workThreadException != null) {
+            throw new RuntimeException(workThreadException);
+        }
+        threadPool.shutdown();
+//        threadPool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+        threadPool.awaitTermination(10, TimeUnit.SECONDS);
+        workThread.interrupt();
+        workThread.join();
+        workThread = null;
+        ma = null;
     }
 }

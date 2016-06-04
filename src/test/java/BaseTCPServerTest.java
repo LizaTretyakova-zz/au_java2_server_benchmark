@@ -17,11 +17,12 @@ public class BaseTCPServerTest {
     private final MetricsAggregator ma = new MetricsAggregator(
             "test", 10, new Parameter("n", 1, 10, 1), new Parameter("m", 10, 10, 0), new Parameter("d", 10, 10, 0)
     );
+    private final int x = 3;
 
     public void baseTest(BaseTCPServer server, TCPClient client, List<Integer> data, List<Integer> expected)
             throws IOException, ExecutionException, InterruptedException {
         server.start(ma);
-        List<Integer> result = client.sortData(server.getServer(), data, ma);
+        List<Integer> result = client.sortData(server.getServer(), x, 10, data, ma);
         server.stop();
         assertEquals(result, expected);
     }
@@ -53,7 +54,7 @@ public class BaseTCPServerTest {
         TCPClient client = new TCPClient();
 
         server.start(ma);
-        List<Integer> result = client.sortData(server.getServerChannel(), unsorted, ma);
+        List<Integer> result = client.sortData(server.getServerChannel(), x, 10, unsorted, ma);
         server.stop();
         assertEquals(sorted, result);
     }

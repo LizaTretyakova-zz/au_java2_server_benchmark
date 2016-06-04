@@ -5,6 +5,7 @@ import Utilities.Utils;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class ThreadpoolServer extends BaseTCPServer {
 
@@ -17,6 +18,8 @@ public class ThreadpoolServer extends BaseTCPServer {
         }
         server.close();
         threadpool.shutdown();
+//        threadpool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+        threadpool.awaitTermination(10, TimeUnit.SECONDS);
         workThread.interrupt();
         workThread.join();
         workThread = null;
