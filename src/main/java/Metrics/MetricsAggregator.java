@@ -46,15 +46,15 @@ public class MetricsAggregator {
         this.d = d;
     }
 
-    public void submitRequest(long val) {
+    public synchronized void submitRequest(long val) {
         requestBuf.add(val);
     }
 
-    public void submitClient(long val) {
+    public synchronized void submitClient(long val) {
         clientBuf.add(val);
     }
 
-    public void submitAvg(long val) {
+    public synchronized void submitAvg(long val) {
         avgBuf.add(val);
     }
 
@@ -68,6 +68,10 @@ public class MetricsAggregator {
         long requestAvg = requestBuf.stream().collect(Collectors.averagingLong(x -> x)).longValue();
         long clientAvg = clientBuf.stream().collect(Collectors.averagingLong(x -> x)).longValue();
         long avgAvg = avgBuf.stream().collect(Collectors.averagingLong(x -> x)).longValue();
+
+        LOGGER.error("requestBuf size: " + Integer.toString(requestBuf.size()));
+        LOGGER.error("clientsBuf size: " + Integer.toString(clientBuf.size()));
+        LOGGER.error("avgBuf size: " + Integer.toString(avgBuf.size()));
 
         requestBuf.clear();
         clientBuf.clear();
@@ -152,7 +156,7 @@ public class MetricsAggregator {
         }
 
         List<Long> xAxis = new ArrayList<>();
-        for(long i = (long) changing.getStart(); i <= (long) changing.getEnd(); i += changing.getStep()) {
+        for(long i = (long) changing.getStart(); i < (long) changing.getEnd(); i += changing.getStep()) {
             xAxis.add(i);
         }
 

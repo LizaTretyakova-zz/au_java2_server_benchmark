@@ -2,6 +2,8 @@ package Clients;
 
 import Metrics.MetricsAggregator;
 import Utilities.Utils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -12,6 +14,7 @@ import java.util.concurrent.*;
 
 public class TCPClient extends BaseClient {
     private Exception inThreadException;
+    private static final Logger LOGGER = LogManager.getLogger(TCPClient.class);
 
     @Override
     public List<Integer> sortData(InetAddress addr, int port, int x, int d, List<Integer> data, MetricsAggregator ma)
@@ -27,6 +30,7 @@ public class TCPClient extends BaseClient {
                     Thread.sleep(d);
                 } catch (IOException | InterruptedException e) {
                     e.printStackTrace();
+                    LOGGER.error("EOF on iteration i: " + Integer.toString(i));
                     throw new RuntimeException(e);
                 }
             }

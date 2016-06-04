@@ -1,7 +1,10 @@
 package UI;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.Logger;
 
 public final class UIMain {
@@ -34,7 +37,20 @@ public final class UIMain {
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("Menu");
         JMenuItem calculate = new JMenuItem("Calculate");
-        calculate.addActionListener(e -> canvas.calculate());
+        calculate.addActionListener(e -> {
+            try {
+                canvas.calculate();
+            } catch (
+                    NoSuchMethodException
+                            | InterruptedException
+                            | IllegalAccessException
+                            | ExecutionException
+                            | IOException
+                            | InstantiationException
+                            | InvocationTargetException e1) {
+                e1.printStackTrace();
+            }
+        });
         JMenuItem clear = new JMenuItem("Clear");
         clear.addActionListener(e -> {
             canvas.clear();

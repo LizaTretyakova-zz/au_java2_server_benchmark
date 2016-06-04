@@ -48,25 +48,26 @@ public class LauncherTest {
         }
     }
 
-    @Test
-    public void testMultithreadStupid() {
-        baseTestStupid(Launcher.TCP_MULTI);
-    }
+//    @Test
+//    public void testMultithreadStupid() {
+//        baseTestStupid(Launcher.TCP_MULTI);
+//    }
 
-    @Test
-    public void testThreadpoolStupid() {
-        baseTestStupid(Launcher.TCP_POOL);
-    }
+//    @Test
+//    public void testThreadpoolStupid() {
+//        baseTestStupid(Launcher.TCP_POOL);
+//    }
 
-    @Test
-    public void testNonblockingStupid() {
-        baseTestStupid(Launcher.TCP_NONBL);
-    }
+//    @Test
+//    public void testNonblockingStupid() {
+//        baseTestStupid(Launcher.TCP_NONBL);
+//    }
 
-    @Test
-    public void testSingleStupid() {
-        baseTestStupid(Launcher.TCP_SINGLE);
-    }
+// TODO: cnother client
+//    @Test
+//    public void testSingleStupid() {
+//        baseTestStupid(Launcher.TCP_SINGLE);
+//    }
 
     @Test
     public void testUDPMultihreadStupid() {
@@ -98,25 +99,25 @@ public class LauncherTest {
         }
     }
 
-    @Test
-    public void testMultithread() {
-        baseTestMulti(Launcher.TCP_MULTI);
-    }
+//    @Test
+//    public void testMultithread() {
+//        baseTestMulti(Launcher.TCP_MULTI);
+//    }
 
-    @Test
-    public void testThreadpool() {
-        baseTestMulti(Launcher.TCP_POOL);
-    }
+//    @Test
+//    public void testThreadpool() {
+//        baseTestMulti(Launcher.TCP_POOL);
+//    }
 
-    @Test
-    public void testNonblocking() {
-        baseTestMulti(Launcher.TCP_NONBL);
-    }
+//    @Test
+//    public void testNonblocking() {
+//        baseTestMulti(Launcher.TCP_NONBL);
+//    }
 
-    @Test
-    public void testSingle() {
-        baseTestMulti(Launcher.TCP_SINGLE);
-    }
+//    @Test
+//    public void testSingle() {
+//        baseTestMulti(Launcher.TCP_SINGLE);
+//    }
 
     @Test
     public void testUDPMultithread() {

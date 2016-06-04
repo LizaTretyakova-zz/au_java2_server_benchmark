@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -95,7 +96,8 @@ public final class Utils {
     // sending messages
 
     public static BenchmarkMessage.Array getMessage(DataInputStream input) throws IOException {
-        int size = input.readInt();
+        int size;
+        size = input.readInt();
         byte[] message = new byte[size];
         if(input.read(message) != size) {
             throw new IOException("Inconsistent message: size is not valid");

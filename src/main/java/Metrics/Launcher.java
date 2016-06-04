@@ -82,12 +82,49 @@ public class Launcher {
         }
     }
 
-    public void launch() {
-// TODO FUTURE MAJOR VERSION
-//        server.start(ma);
-//        for(BaseClient client: clients) {
-//            client.start(server, x, d.getStart() + i * d.getStep(), unsorted, ma);
-//        }
+    public MetricsAggregator launch()
+            throws
+            NoSuchMethodException,
+            IllegalAccessException,
+            InvocationTargetException,
+            InstantiationException,
+            IOException, ExecutionException, InterruptedException {
+        server.start(ma);
+        for(int i = 0; i < getSteps(); i++) {
+            generateUnsorted(i);
+            List<BaseClient> clients = generateClients(i);
+
+            int a = 0;
+            ExecutorService threadpool = Executors.newCachedThreadPool();
+//            ExecutorService threadpool = Executors.newFixedThreadPool(50);
+            for(BaseClient client: clients) {
+                LOGGER.error(Integer.toString(a) + " new client in thread pool " + client.toString());
+                a++;
+                int iSnapshot = i;
+                threadpool.submit( () -> {
+                    try {
+                        LOGGER.error("before sort " + client.toString());
+                        client.sortData(
+                                InetAddress.getByName("localhost"),
+                                BaseServer.PORT,
+                                x,
+                                countParam(d, iSnapshot),
+                                unsorted,
+                                ma
+                        );
+                    } catch (InterruptedException | ExecutionException | IOException e) {
+                        e.printStackTrace();
+                        LOGGER.error(e.getMessage());
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+            threadpool.shutdown();
+            threadpool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+            ma.submit();
+        }
+        server.stop();
+        return ma;
     }
 
     public void launchMultithread()
@@ -121,7 +158,7 @@ public class Launcher {
             threadpool.shutdown();
             threadpool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
         }
-        server.stop();
+        /* TODO */ server.stop();
     }
 
     public void launchOneThread()

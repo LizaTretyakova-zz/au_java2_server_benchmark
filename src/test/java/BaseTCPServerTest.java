@@ -27,13 +27,13 @@ public class BaseTCPServerTest {
         server.stop();
         assertEquals(result, expected);
     }
-
-    @Test
-    public void testSingleThread() throws InterruptedException, ExecutionException, IOException {
-        SingleThreadServer server = new SingleThreadServer();
-        TCPClient client = new TCPClient();
-        baseTest(server, client, unsorted, sorted);
-    }
+// TODO: another client
+//    @Test
+//    public void testSingleThread() throws InterruptedException, ExecutionException, IOException {
+//        SingleThreadServer server = new SingleThreadServer();
+//        TCPClient client = new TCPClient();
+//        baseTest(server, client, unsorted, sorted);
+//    }
 
     @Test
     public void testMultithread() throws InterruptedException, ExecutionException, IOException {
@@ -49,16 +49,16 @@ public class BaseTCPServerTest {
         baseTest(server, client, unsorted, sorted);
     }
 
-    @Test
-    public void testNonblocking() throws InterruptedException, ExecutionException, IOException {
-        NonblockingServer server = new NonblockingServer();
-        TCPClient client = new TCPClient();
-
-        server.start(ma);
-        Thread.sleep(1000);
-        List<Integer> result =
-                client.sortData(InetAddress.getByName("localhost"), BaseServer.PORT, x, 10, unsorted, ma);
-        server.stop();
-        assertEquals(sorted, result);
-    }
+//    @Test
+//    public void testNonblocking() throws InterruptedException, ExecutionException, IOException {
+//        NonblockingServer server = new NonblockingServer();
+//        TCPClient client = new TCPClient();
+//
+//        server.start(ma);
+//        Thread.sleep(1000);
+//        List<Integer> result =
+//                client.sortData(InetAddress.getByName("localhost"), BaseServer.PORT, x, 10, unsorted, ma);
+//        server.stop();
+//        assertEquals(sorted, result);
+//    }
 }
