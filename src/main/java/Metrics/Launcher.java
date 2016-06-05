@@ -132,6 +132,8 @@ public class Launcher {
             }
             threadpool.shutdown();
             threadpool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+            LOGGER.error("Wating 'till the last responces come.");
+            Thread.sleep(1000);
             ma.submit();
         }
         return ma;

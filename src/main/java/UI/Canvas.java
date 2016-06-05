@@ -27,7 +27,7 @@ class Canvas extends JPanel implements DefaultMouseListener {
 
     // private final JPopupMenu popupMenu;
     private final ButtonGroup serverButtonGroup = new ButtonGroup();
-    private final JTextField serverIP = new JTextField(10);
+    private final JTextField serverIP = new JTextField(12);
     private final ButtonGroup metricButtonGroup = new ButtonGroup();
     private final JTextField requestsInput = new JTextField(10);
 
@@ -77,7 +77,9 @@ class Canvas extends JPanel implements DefaultMouseListener {
         server.add(multithreadTCPServerButton);
         server.add(nonblTCPServerButton);
         JLabel serverIPTitle = new JLabel("Server address: ");
+        serverIP.setText("192.168.0.64");
         server.add(serverIP);
+        server.add(serverIPTitle);
 
         // also there is a text field for number of requests for each client
         JPanel requests = new JPanel();
@@ -118,25 +120,25 @@ class Canvas extends JPanel implements DefaultMouseListener {
         JLabel endN = new JLabel("Range N end: ");
         settings.add(endN);
         settings.add(endFieldN);
-        endFieldN.setText("1000");
+        endFieldN.setText("5000");
         JLabel stepN = new JLabel("Range N step: ");
         settings.add(stepN);
         settings.add(stepFieldN);
-        stepFieldN.setText("0");
+        stepFieldN.setText("200");
 
         // range M
         JLabel startM = new JLabel("Range M start: ");
         settings.add(startM);
         settings.add(startFieldM);
-        startFieldM.setText("20");
+        startFieldM.setText("3");
         JLabel endM = new JLabel("Range M end: ");
         settings.add(endM);
         settings.add(endFieldM);
-        endFieldM.setText("30");
+        endFieldM.setText("3");
         JLabel stepM = new JLabel("Range M step: ");
         settings.add(stepM);
         settings.add(stepFieldM);
-        stepFieldM.setText("1");
+        stepFieldM.setText("0");
 
         // range d
         JLabel startD = new JLabel("Range D start: ");
