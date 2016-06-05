@@ -62,4 +62,13 @@ public class ThreadpoolUDPServer extends BaseUDPServer {
         workThread = null;
         ma = null;
     }
+
+    @Override
+    public int getPort() {
+        return 8086;
+    }
+
+    public static int getMAPort() {
+        return 8086 + BaseServer.ADDING;
+    }
 }

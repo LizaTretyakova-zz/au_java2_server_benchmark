@@ -10,8 +10,6 @@ import java.util.List;
 
 public class MultithreadServer extends BaseTCPServer {
 
-//    private final List<Thread> workers = Collections.synchronizedList(new ArrayList<>());
-
     @Override
     protected void processClient() {
         Utils.tryAcceptAndDoJob(server, (input, output) -> {
@@ -20,7 +18,6 @@ public class MultithreadServer extends BaseTCPServer {
                     processClientCore(input, output);
                 }
             });
-//            workers.add(worker);
             worker.start();
         });
     }
@@ -33,11 +30,17 @@ public class MultithreadServer extends BaseTCPServer {
         server.close();
 
         workThread.interrupt();
-//        synchronized (workers) {
-//            for (Thread worker : workers) worker.join();
-//        }
         workThread.join();
         workThread = null;
         ma = null;
+    }
+
+    @Override
+    public int getPort() {
+        return 8081;
+    }
+
+    public static int getMAPort() {
+        return 8081 + BaseServer.ADDING;
     }
 }

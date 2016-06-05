@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
@@ -28,7 +29,6 @@ public class MetricsAggregatorTest {
         );
     }
 
-    @After
     public void tearDown() throws IOException {
         //Files.deleteIfExists(Paths.get(MetricsAggregator.NAME));
         Files.list(Paths.get(MetricsAggregator.NAME)).forEach((file) -> {
@@ -58,5 +58,42 @@ public class MetricsAggregatorTest {
     public void testDraw() throws Exception {
         testStore();
         ma.draw();
+    }
+
+    @Test
+    public void testServerMA() throws IOException {
+        ServerMetricsAggregator sma = new ServerMetricsAggregator(5555);
+        MetricsAggregator ma = new MetricsAggregator(
+                "test",
+                100500,
+                new Parameter("n", 0, 9, 1),
+                new Parameter("m", 10, 10, 0),
+                new Parameter("d", 10, 10, 0),
+                InetAddress.getByName("localhost"),
+                5555
+        );
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        sma.submitRequest(100500);
+        sma.submitRequest(500100);
+        sma.submitClient(18);
+        sma.submitClient(3);
+
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        ma.submitAvg(97);
+        ma.submitAvg(19);
+
+        ma.submit();
+        ma.store();
     }
 }

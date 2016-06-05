@@ -1,6 +1,7 @@
 package Servers;
 
 import Metrics.MetricsAggregator;
+import Metrics.ServerMetricsAggregator;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -16,8 +17,8 @@ public abstract class BaseUDPServer extends BaseServer {
 
     @Override
     public void start(MetricsAggregator metricsAggregator) throws IOException {
-        server = new DatagramSocket(PORT);
-        ma = metricsAggregator;
+        server = new DatagramSocket(getPort());
+        ma = metricsAggregator == null ? new ServerMetricsAggregator(getPort() + ADDING) : metricsAggregator;
         workThread = createWorkThread();
         workThread.start();
     }

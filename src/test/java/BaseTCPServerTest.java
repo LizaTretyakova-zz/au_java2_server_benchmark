@@ -20,10 +20,10 @@ public class BaseTCPServerTest {
     );
     private final int x = 3;
 
-    public void baseTest(BaseTCPServer server, TCPClient client, List<Integer> data, List<Integer> expected)
+    public void baseTest(BaseTCPServer server, TCPClient client, List<Integer> data, List<Integer> expected, int port)
             throws IOException, ExecutionException, InterruptedException {
         server.start(ma);
-        List<Integer> result = client.sortData(InetAddress.getByName("localhost"), BaseServer.PORT, x, 10, data, ma);
+        List<Integer> result = client.sortData(InetAddress.getByName("localhost"), port, x, 10, data, ma);
         server.stop();
         assertEquals(result, expected);
     }
@@ -39,14 +39,14 @@ public class BaseTCPServerTest {
     public void testMultithread() throws InterruptedException, ExecutionException, IOException {
         MultithreadServer server = new MultithreadServer();
         TCPClient client = new TCPClient();
-        baseTest(server, client, unsorted, sorted);
+        baseTest(server, client, unsorted, sorted, server.getPort());
     }
 
     @Test
     public void testThreadpool() throws InterruptedException, ExecutionException, IOException {
         ThreadpoolServer server = new ThreadpoolServer();
         TCPClient client = new TCPClient();
-        baseTest(server, client, unsorted, sorted);
+        baseTest(server, client, unsorted, sorted, server.getPort());
     }
 
 //    @Test

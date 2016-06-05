@@ -34,4 +34,13 @@ public class ThreadpoolServer extends BaseTCPServer {
             }
         }));
     }
+
+    @Override
+    public int getPort() {
+        return 8085;
+    }
+
+    public static int getMAPort() {
+        return 8085 + BaseServer.ADDING;
+    }
 }

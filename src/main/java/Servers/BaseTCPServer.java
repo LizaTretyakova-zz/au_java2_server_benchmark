@@ -1,12 +1,14 @@
 package Servers;
 
+import Metrics.BaseMetricsAggregator;
 import Metrics.MetricsAggregator;
+import Metrics.ServerMetricsAggregator;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 
 public abstract class BaseTCPServer extends BaseServer {
-    public static final int PORT = 8081;
+//    public static final int PORT = 8081;
 
     protected ServerSocket server;
     protected IOException workThreadException = null;
@@ -23,8 +25,8 @@ public abstract class BaseTCPServer extends BaseServer {
 
     @Override
     public void start(MetricsAggregator metricsAggregator) throws IOException {
-        server = new ServerSocket(PORT);
-        ma = metricsAggregator;
+        server = new ServerSocket(getPort());
+        ma = metricsAggregator == null ? new ServerMetricsAggregator(getPort() + ADDING) : metricsAggregator;
         workThread = createWorkThread();
         workThread.start();
     }

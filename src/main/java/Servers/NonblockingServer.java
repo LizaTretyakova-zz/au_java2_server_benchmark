@@ -1,6 +1,7 @@
 package Servers;
 
 import Metrics.MetricsAggregator;
+import Metrics.ServerMetricsAggregator;
 import Utilities.BenchmarkMessage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +30,7 @@ public class NonblockingServer extends BaseServer {
             try (
                     Selector selector = Selector.open()
             ) {
-                serverChannel.bind(new InetSocketAddress(PORT));
+                serverChannel.bind(new InetSocketAddress(getPort()));
                 serverChannel.configureBlocking(false);
                 serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
@@ -97,8 +98,8 @@ public class NonblockingServer extends BaseServer {
     }
 
     @Override
-    public void start(MetricsAggregator metricsAggregator) {
-        ma = metricsAggregator;
+    public void start(MetricsAggregator metricsAggregator) throws IOException {
+        ma = metricsAggregator == null ? new ServerMetricsAggregator(getPort() + ADDING) : metricsAggregator;
         workThread = createWorkThread();
         workThread.start();
     }
@@ -195,4 +196,12 @@ public class NonblockingServer extends BaseServer {
         }
     }
 
+    @Override
+    public int getPort() {
+        return 8083;
+    }
+
+    public static int getMAPort() {
+        return 8083 + BaseServer.ADDING;
+    }
 }

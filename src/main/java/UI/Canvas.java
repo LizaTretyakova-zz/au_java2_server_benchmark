@@ -14,6 +14,7 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,6 +27,7 @@ class Canvas extends JPanel implements DefaultMouseListener {
 
     // private final JPopupMenu popupMenu;
     private final ButtonGroup serverButtonGroup = new ButtonGroup();
+    private final JTextField serverIP = new JTextField(10);
     private final ButtonGroup metricButtonGroup = new ButtonGroup();
     private final JTextField requestsInput = new JTextField(10);
 
@@ -74,6 +76,8 @@ class Canvas extends JPanel implements DefaultMouseListener {
         server.add(threadPoolTCPServerButton);
         server.add(multithreadTCPServerButton);
         server.add(nonblTCPServerButton);
+        JLabel serverIPTitle = new JLabel("Server address: ");
+        server.add(serverIP);
 
         // also there is a text field for number of requests for each client
         JPanel requests = new JPanel();
@@ -201,6 +205,9 @@ class Canvas extends JPanel implements DefaultMouseListener {
                 break;
             }
         }
+        // get server address
+        String ip = serverIP.getText();
+        InetAddress addr = InetAddress.getByName(ip);
         // get X
         int x = Integer.parseInt(requestsInput.getText());
         // get metric
@@ -236,7 +243,7 @@ class Canvas extends JPanel implements DefaultMouseListener {
         // call server with parameters
         Launcher launcher;
         try {
-            launcher = new Launcher(d, m, n, x, arch);
+            launcher = new Launcher(d, m, n, x, arch, addr);
         } catch (
                 InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e
         ) {
@@ -244,7 +251,8 @@ class Canvas extends JPanel implements DefaultMouseListener {
             LOGGER.error(e.getMessage());
             throw new RuntimeException(e);
         }
-        MetricsAggregator ma = launcher.launch();
+//        MetricsAggregator ma = launcher.launch();
+        MetricsAggregator ma = launcher.launchClients(addr);
         ma.draw();
         ma.storeInfo();
         ma.store();

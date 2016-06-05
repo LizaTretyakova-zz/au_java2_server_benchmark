@@ -46,4 +46,13 @@ public class MultithreadUDPServer extends BaseUDPServer {
             }
         }
     }
+
+    @Override
+    public int getPort() {
+        return 8082;
+    }
+
+    public static int getMAPort() {
+        return 8082 + BaseServer.ADDING;
+    }
 }

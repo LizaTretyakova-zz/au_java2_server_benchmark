@@ -41,7 +41,16 @@ public class Launcher {
     private int x;
     private MetricsAggregator ma;
 
-    public Launcher(Parameter d, Parameter m, Parameter n, int x, String arch)
+    public static void main(String[] args) throws IOException {
+        new SingleThreadServer().start(null);
+        new MultithreadServer().start(null);
+        new ThreadpoolServer().start(null);
+        new NonblockingServer().start(null);
+        new MultithreadUDPServer().start(null);
+        new ThreadpoolUDPServer().start(null);
+    }
+
+    public Launcher(Parameter d, Parameter m, Parameter n, int x, String arch, InetAddress addr)
             throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
         this.d = d;
         this.m = m;
@@ -49,37 +58,83 @@ public class Launcher {
         this.x = x;
         this.arch = arch;
 
-        ma = new MetricsAggregator(arch, x, n, m, d);
-
         switch(arch) {
             case TCP_SINGLE:
                 server = new SingleThreadServer();
                 clientClass = TCPClient.class;
+                ma = new MetricsAggregator(arch, x, n, m, d, addr, SingleThreadServer.getMAPort());
                 break;
             case TCP_MULTI:
                 server = new MultithreadServer();
                 clientClass = TCPClient.class;
+                ma = new MetricsAggregator(arch, x, n, m, d, addr, MultithreadServer.getMAPort());
                 break;
             case TCP_POOL:
                 server = new ThreadpoolServer();
                 clientClass = TCPClient.class;
+                ma = new MetricsAggregator(arch, x, n, m, d, addr, ThreadpoolServer.getMAPort());
                 break;
             case TCP_NONBL:
                 server = new NonblockingServer();
                 clientClass = TCPClient.class;
+                ma = new MetricsAggregator(arch, x, n, m, d, addr, NonblockingServer.getMAPort());
                 break;
             case UDP_MULTI:
                 server = new MultithreadUDPServer();
                 clientClass = UDPClient.class;
+                ma = new MetricsAggregator(arch, x, n, m, d, addr, MultithreadUDPServer.getMAPort());
                 break;
             case UDP_POOL:
                 server = new ThreadpoolUDPServer();
                 clientClass = UDPClient.class;
+                ma = new MetricsAggregator(arch, x, n, m, d, addr, ThreadpoolUDPServer.getMAPort());
                 break;
             default:
                 LOGGER.error("Unknown architecture. Terminating testing.");
                 throw new RuntimeException("Unknown architecture. Terminating testing.");
         }
+    }
+
+    public MetricsAggregator launchClients(InetAddress addr)
+            throws
+            NoSuchMethodException,
+            IllegalAccessException,
+            InvocationTargetException,
+            InstantiationException,
+            IOException, ExecutionException, InterruptedException {
+        for(int i = 0; i < getSteps(); i++) {
+            generateUnsorted(i);
+            List<BaseClient> clients = generateClients(i);
+
+            int a = 0;
+            ExecutorService threadpool = Executors.newCachedThreadPool();
+            for(BaseClient client: clients) {
+                LOGGER.error(Integer.toString(a) + " new client in thread pool " + client.toString());
+                a++;
+                int iSnapshot = i;
+                threadpool.submit( () -> {
+                    try {
+                        LOGGER.error("before sort " + client.toString());
+                        client.sortData(
+                                addr,
+                                server.getPort(),
+                                x,
+                                countParam(d, iSnapshot),
+                                unsorted,
+                                ma
+                        );
+                    } catch (InterruptedException | ExecutionException | IOException e) {
+                        e.printStackTrace();
+                        LOGGER.error(e.getMessage());
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
+            threadpool.shutdown();
+            threadpool.awaitTermination(Long.MAX_VALUE, TimeUnit.DAYS);
+            ma.submit();
+        }
+        return ma;
     }
 
     public MetricsAggregator launch()
@@ -96,7 +151,6 @@ public class Launcher {
 
             int a = 0;
             ExecutorService threadpool = Executors.newCachedThreadPool();
-//            ExecutorService threadpool = Executors.newFixedThreadPool(50);
             for(BaseClient client: clients) {
                 LOGGER.error(Integer.toString(a) + " new client in thread pool " + client.toString());
                 a++;
@@ -106,7 +160,7 @@ public class Launcher {
                         LOGGER.error("before sort " + client.toString());
                         client.sortData(
                                 InetAddress.getByName("localhost"),
-                                BaseServer.PORT,
+                                server.getPort(),
                                 x,
                                 countParam(d, iSnapshot),
                                 unsorted,
@@ -223,9 +277,10 @@ public class Launcher {
         return (p.getEnd() - p.getStart()) / p.getStep();
     }
 
-    private void requestServer(List<Integer> sorted, BaseClient client, int i) throws IOException, ExecutionException, InterruptedException {
+    private void requestServer(List<Integer> sorted, BaseClient client, int i)
+            throws IOException, ExecutionException, InterruptedException {
         List<Integer> result =
-                client.sortData(InetAddress.getByName("localhost"), BaseServer.PORT, x, countParam(d, i), unsorted, ma);
+                client.sortData(InetAddress.getByName("localhost"), server.getPort(), x, countParam(d, i), unsorted, ma);
 
         if (!sorted.equals(result)) {
             LOGGER.error("Expected: ");

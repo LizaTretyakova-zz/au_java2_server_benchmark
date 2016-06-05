@@ -1,21 +1,24 @@
 package Metrics;
 
+import Clients.TCPClient;
+import Clients.UDPClient;
+import Servers.*;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.knowm.xchart.QuickChart;
 import org.knowm.xchart.SwingWrapper;
 import org.knowm.xchart.XYChart;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MetricsAggregator {
+public class MetricsAggregator implements BaseMetricsAggregator {
 
     public static final String NAME = "results";
     public static final String INFO = "info";
@@ -47,11 +50,50 @@ public class MetricsAggregator {
         this.d = d;
     }
 
+    public MetricsAggregator(String arch, int x, Parameter n, Parameter m, Parameter d, InetAddress addr, int port) {
+        this.arch = arch;
+        this.x = x;
+        this.n = n;
+        this.m = m;
+        this.d = d;
+
+        Thread socketThread = new Thread(() -> {
+            try(
+                    Socket socket = new Socket(addr, port);
+                    DataInputStream input = new DataInputStream(socket.getInputStream());
+                    DataOutputStream output = new DataOutputStream(socket.getOutputStream());
+            ) {
+                while(true) {
+                    int notification = input.readInt();
+                    LOGGER.error("Read notification: " + Integer.toString(notification));
+                    if (notification == BaseMetricsAggregator.REQUEST) {
+                        LOGGER.error("Submitting REQUEST");
+                        submitRequest(input.readLong());
+                    } else if (notification == BaseMetricsAggregator.CLIENT) {
+                        LOGGER.error("Submitting CLIENT");
+                        submitClient(input.readLong());
+                    } else {
+                        RuntimeException e = new RuntimeException("Unknown input from server");
+                        LOGGER.error(e.getMessage(), e);
+                        throw e;
+                    }
+                }
+            } catch (IOException e) {
+                LOGGER.error("Connection closed. No metrics from server will be available.", e);
+            }
+        });
+        socketThread.start();
+    }
+
+    @Override
     public synchronized void submitRequest(long val) {
+        LOGGER.error("Got a request val: " + Long.toString(val));
         requestBuf.add(val);
     }
 
+    @Override
     public synchronized void submitClient(long val) {
+        LOGGER.error("Got a client val: " + Long.toString(val));
         clientBuf.add(val);
     }
 
@@ -109,6 +151,9 @@ public class MetricsAggregator {
 
     private void storeMetric(String metricName, List<Long> val) throws IOException {
         FileWriter writer = createFile(metricName);
+        if(changing == null) {
+            createChanging();
+        }
         writer.append(metricName + ", " + changing.getName() + "\n");
 //        writer.append("\n");
         int i = 0;
@@ -143,10 +188,7 @@ public class MetricsAggregator {
     }
 
     public static void drawMetric(String metricName, String xName, String yName, List<Long> xData, List<Long> yData) {
-//        double[] xData = new double[] { 0.0, 1.0, 2.0 };
-//        double[] yData = new double[] { 2.0, 1.0, 0.0 };
-
-        // Create Chart
+       // Create Chart
         XYChart chart = QuickChart.getChart(metricName, xName, yName, yName + "(" + xName + ")", xData, yData);
 
         // Show it
@@ -154,13 +196,7 @@ public class MetricsAggregator {
     }
 
     public void draw() {
-        if(n.isChanging()) {
-            changing = n;
-        } else if (m.isChanging()) {
-            changing = m;
-        } else if (d.isChanging()) {
-            changing = d;
-        }
+        createChanging();
 
         List<Long> xAxis = new ArrayList<>();
         for(long i = (long) changing.getStart(); i < (long) changing.getEnd(); i += changing.getStep()) {
@@ -170,6 +206,16 @@ public class MetricsAggregator {
         drawMetric("Request time", "Request time", changing.getName(), xAxis, requestTime);
         drawMetric("Client time", "Client time", changing.getName(), xAxis, clientTime);
         drawMetric("Avg time", "Avg time", changing.getName(), xAxis, avgTime);
+    }
+
+    private void createChanging() {
+        if(n.isChanging()) {
+            changing = n;
+        } else if (m.isChanging()) {
+            changing = m;
+        } else if (d.isChanging()) {
+            changing = d;
+        }
     }
 }
 // MerlinArthur, lol

@@ -1,5 +1,6 @@
 package Servers;
 
+import Metrics.BaseMetricsAggregator;
 import Metrics.MetricsAggregator;
 import Utilities.BenchmarkMessage;
 import Utilities.Utils;
@@ -18,13 +19,15 @@ import java.util.List;
 
 public abstract class BaseServer {
 
-    public static final int PORT = 8081;
+//    public static final int PORT = 8081;
     public static final int PACKET_SIZE = 65536;
+    public static final int ADDING = 1000;
 
     protected IOException workThreadException = null;
-    protected MetricsAggregator ma;
+    protected BaseMetricsAggregator ma;
 
     public abstract void start(MetricsAggregator ma) throws IOException;
+//    public abstract void start();
     public abstract void stop() throws IOException, InterruptedException;
     protected abstract void processClient();
 

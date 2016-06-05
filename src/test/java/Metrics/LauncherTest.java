@@ -131,7 +131,7 @@ public class LauncherTest {
     private Launcher getLauncher(String arch) {
         Launcher launcher;
         try {
-            launcher = new Launcher(d, m, n, x, arch);
+            launcher = new Launcher(d, m, n, x, arch, null);
         } catch (
                 InvocationTargetException | NoSuchMethodException | InstantiationException | IllegalAccessException e
                 ) {
