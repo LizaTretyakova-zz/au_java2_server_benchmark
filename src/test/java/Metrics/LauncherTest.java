@@ -14,7 +14,7 @@ public class LauncherTest {
 
     private final Logger LOGGER = LogManager.getLogger(MetricsAggregator.class);
     private final Parameter n = new Parameter("n", 1000, 1000, 0);
-    private final Parameter m = new Parameter("m", 20, 30, 1);
+    private final Parameter m = new Parameter("m", 3, 4, 1);
     private final Parameter d = new Parameter("d", 500, 500, 0);
     private final int x = 5;
     private final MetricsAggregator ma = new MetricsAggregator("test", x, n, m, d);
@@ -47,15 +47,15 @@ public class LauncherTest {
         }
     }
 
-//    @Test
-//    public void testMultithreadStupid() {
-//        baseTestStupid(Launcher.TCP_MULTI);
-//    }
+    @Test
+    public void testMultithreadStupid() {
+        baseTestStupid(Launcher.TCP_MULTI);
+    }
 
-//    @Test
-//    public void testThreadpoolStupid() {
-//        baseTestStupid(Launcher.TCP_POOL);
-//    }
+    @Test
+    public void testThreadpoolStupid() {
+        baseTestStupid(Launcher.TCP_POOL);
+    }
 
 //    @Test
 //    public void testNonblockingStupid() {
@@ -98,15 +98,15 @@ public class LauncherTest {
         }
     }
 
-//    @Test
-//    public void testMultithread() {
-//        baseTestMulti(Launcher.TCP_MULTI);
-//    }
-//
-//    @Test
-//    public void testThreadpool() {
-//        baseTestMulti(Launcher.TCP_POOL);
-//    }
+    @Test
+    public void testMultithread() {
+        baseTestMulti(Launcher.TCP_MULTI);
+    }
+
+    @Test
+    public void testThreadpool() {
+        baseTestMulti(Launcher.TCP_POOL);
+    }
 
     @Test
     public void testNonblocking() {

@@ -33,7 +33,9 @@ public class MetricsAggregatorTest {
         //Files.deleteIfExists(Paths.get(MetricsAggregator.NAME));
         Files.list(Paths.get(MetricsAggregator.NAME)).forEach((file) -> {
             try {
-                Files.deleteIfExists(file);
+                if (Files.exists(file) && !Files.isDirectory(file)) {
+                    Files.deleteIfExists(file);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
                 LOGGER.error(e.getMessage());

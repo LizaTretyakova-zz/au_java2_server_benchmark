@@ -99,9 +99,10 @@ public final class Utils {
         int size;
         size = input.readInt();
         byte[] message = new byte[size];
-        if(input.read(message) != size) {
-            throw new IOException("Inconsistent message: size is not valid");
-        }
+//        if(input.read(message) != size) {
+//            throw new IOException("Inconsistent message: size is not valid");
+//        }
+        input.readFully(message);
         return BenchmarkMessage.Array.parseFrom(message);
     }
 
