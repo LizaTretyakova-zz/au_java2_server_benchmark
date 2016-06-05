@@ -88,8 +88,7 @@ public class MetricsAggregator {
 
         String dop = changing == null ? "" : changing.getName();
         String filename =
-                Paths.get(NAME, NAME + arch + purpose + dop + ".csv").toString();
-        Files.deleteIfExists(Paths.get(filename));
+                Paths.get(NAME, NAME + arch + purpose + dop + "_" + Long.toString(System.currentTimeMillis()) + ".csv").toString();
         return new FileWriter(new File(filename));
     }
 
